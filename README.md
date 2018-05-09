@@ -1,5 +1,7 @@
 # Snakemake ATAC-seq pipeline
-The standard Parker Lab ATAC-seq pipeline in Snakemake (for paired-end data). Fastq file naming scheme should be '\*.1.fastq.gz' and '\*.2.fastq.gz'. By default, will work with the following genomes:
+The standard Parker Lab ATAC-seq pipeline in Snakemake (for paired-end data).
+Fastq file naming scheme should be '\*.1.fastq.gz' and '\*.2.fastq.gz'. By
+default, will work with the following genomes:
 
 1. hg19
 2. hg38
@@ -8,9 +10,14 @@ The standard Parker Lab ATAC-seq pipeline in Snakemake (for paired-end data). Fa
 5. rn4
 6. rn5 
 
-This can be changed by adding the desired genome's information to the `#GENERIC DATA` section of the Snakefile (although ataqv may fail to run for organisms besides fly, human, mouse, rat, worm, or yeast -- if you are processing data from another organism, you will need to edit the pipeline to supply ataqv with an autosomal reference file).
+This can be changed by adding the desired genome's information to the `#GENERIC DATA`
+section of the Snakefile (although ataqv may fail to run for organisms
+besides fly, human, mouse, rat, worm, or yeast -- if you are processing data
+from another organism, you will need to edit the pipeline to supply ataqv with
+an autosomal reference file).
 
 ## Dependencies
+
 Python >=2.7, and the following software packages:
 
 1. fastqc
@@ -25,7 +32,9 @@ Python >=2.7, and the following software packages:
 Also, assumes that picard MarkDuplicates can be called using the syntax: `picard MarkDuplicates ...`.
 
 ## Usage:
+
 This Snakemake pipeline requires a config file (JSON format) with the following information:
+
 ```bash
 {
     "blacklist": {  # (Optional) For each genome, a list of blacklisted regions in bed format
@@ -98,10 +107,23 @@ This Snakemake pipeline requires a config file (JSON format) with the following 
         "rn5": "/lab/data/reference/rat/rn5/annot/rn5.K30.mappable_only.bed.gz"
     }
 }
-```
-IMPORTANT: the basename for each fastq file must be unique. In many cases the only information that will be changing between ATAC-seq experiments is the library information and the desired output directory (paths to BWA indices, blacklists, etc. will remain unchanged). It may therefore by convenient to have a single permanent JSON file with all of the required information except the library information and the results dir. If this is the case, you can use the python script at `src/make_atacseq_config.py` to add library information and the results path to this unchanging JSON:
-```bash
-python src/make_atacseq_config.py -r /path/to/results_dir /path/to/json_with_everything_except_libraries_and_results.json /path/to/json_with_libraries.json
+
 ```
 
-An example is given in `examples/`. In case you are running on a cluster and need a cluster config file for Snakemake, a template cluster config can be found in `examples/` as well.
+**IMPORTANT**: the basename for each fastq file must be unique. In many cases the
+only information that will be changing between ATAC-seq experiments is the
+library information and the desired output directory (paths to BWA indices,
+blacklists, etc. will remain unchanged). It may therefore by convenient to have
+a single permanent JSON file with all of the required information except the
+library information and the results dir. If this is the case, you can use the
+python script at `src/make_atacseq_config.py` to add library information and the
+results path to this unchanging JSON:
+
+```bash
+python bin/make_atacseq_config.py -r /path/to/results_dir /path/to/json_with_everything_except_libraries_and_results.json /path/to/json_with_libraries.json
+```
+
+Example files are given given in `examples/`.
+
+In case you are running on a cluster and need a cluster config file for
+Snakemake, a template cluster config can be found in `src/` as well.
