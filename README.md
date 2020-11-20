@@ -1,5 +1,5 @@
-# Snakemake ATAC-seq pipeline
-The standard Parker Lab ATAC-seq pipeline in Snakemake (for paired-end data).
+# Snakemake ChIP-seq pipeline
+ChIP-seq processing pipeline based on the Parker Lab ATAC-seq pipeline in Snakemake (for paired-end data).
 Fastq file naming scheme should be '\*.1.fastq.gz' and '\*.2.fastq.gz'. By
 default, will work with the following genomes:
 
@@ -27,7 +27,6 @@ Python >=2.7, and the following software packages:
 5. samtools
 6. macs2
 7. bedtools
-8. ataqv
 
 Also, assumes that picard MarkDuplicates can be called using the syntax: `picard MarkDuplicates ...`.
 
@@ -111,7 +110,7 @@ This Snakemake pipeline requires a config file (JSON format) with the following 
 ```
 
 **IMPORTANT**: the basename for each fastq file must be unique. In many cases the
-only information that will be changing between ATAC-seq experiments is the
+only information that will be changing between ChIP-seq experiments is the
 library information and the desired output directory (paths to BWA indices,
 blacklists, etc. will remain unchanged). It may therefore by convenient to have
 a single permanent JSON file with all of the required information except the
