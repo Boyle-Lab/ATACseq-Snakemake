@@ -155,8 +155,6 @@ rule all:
         [os.path.join(FASTQC_DIR, '{}_fastqc.zip'.format(os.path.basename(fastq).replace('.fastq.gz', ''))) for fastq in iterate_all_fastqs()],
         # blacklist-filtered peak files
         [os.path.join(MACS2_DIR, '{}_peaks.broadPeak.noblacklist'.format(x)) for x in config['libraries']],
-        # ataqv output
-        [os.path.join(ATAQV_DIR, '{}.ataqv.json.gz'.format(x)) for x in config['libraries']],
         # software versions
         os.path.join(VERSION_DIR, 'fastqc_version.txt'),
         os.path.join(VERSION_DIR, 'cta_version.txt'),
@@ -165,7 +163,6 @@ rule all:
         os.path.join(VERSION_DIR, 'samtools_version.txt'),
         os.path.join(VERSION_DIR, 'macs2_version.txt'),
         os.path.join(VERSION_DIR, 'bedtools_version.txt'),
-        os.path.join(VERSION_DIR, 'ataqv_version.txt')
 
 
 rule fastqc:
@@ -277,22 +274,6 @@ rule blacklist_filter:
         """{params.filter_cmd} > {output}"""
 
 
-rule ataqv:
-    input:
-        md_bam = os.path.join(MD_DIR, '{library}.md.bam'),
-        peaks = os.path.join(MACS2_DIR, '{library}_peaks.broadPeak')
-    output:
-        metrics = os.path.join(ATAQV_DIR, '{library}.ataqv.json.gz'),
-        stdout_destination = os.path.join(ATAQV_DIR, '{library}.ataqv.out')
-    params:
-        name = '{library}',
-        description = '{library}', # this should really be {description}
-        organism = lambda wildcards: get_organism(get_genome(wildcards.library)),
-        tss_file = lambda wildcards: get_tss(get_genome(wildcards.library)),
-        excluded_regions_option = lambda wildcards: ' '.join(['--excluded-region-file {}'.format(x) for x in get_blacklists(get_genome(wildcards.library))]) if get_blacklists(get_genome(wildcards.library)) is not None else ''
-    shell:
-        """ataqv --peak-file {input.peaks} --name {params.description} --metrics-file {output.metrics} {params.excluded_regions_option} --tss-file {params.tss_file} --ignore-read-groups {params.organism} {input.md_bam} > {output.stdout_destination}"""
-
 
 rule versions:
     output:
@@ -303,7 +284,6 @@ rule versions:
         samtools_version = os.path.join(VERSION_DIR, 'samtools_version.txt'),
         macs2_version = os.path.join(VERSION_DIR, 'macs2_version.txt'),
         bedtools_version = os.path.join(VERSION_DIR, 'bedtools_version.txt'),
-        ataqv_version = os.path.join(VERSION_DIR, 'ataqv_version.txt')
     run:
         shell('fastqc --version &> {output.fastqc_version} || echo ""')
         shell('cta --version &> {output.cta_version} || echo ""')
@@ -312,7 +292,6 @@ rule versions:
         shell('samtools --version &> {output.samtools_version} || echo ""')
         shell('macs2 --version &> {output.macs2_version} || echo ""')
         shell('bedtools --version &> {output.bedtools_version} || echo ""')
-        shell('ataqv --version &> {output.ataqv_version} || echo ""')
 
 
 onerror:
